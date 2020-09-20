@@ -466,7 +466,7 @@ def add_attachment(type):
             clear()
             documents_menu()
         else:
-            file = f'{os.getcwd()}//documentos//{attach}'
+            file = f'./doc/{attach}'
             if os.path.exists(file):
                 documents.append(attach)
                 print(f'{Fore.GREEN}# O documento {attach} foi anexado!')
@@ -489,7 +489,7 @@ def add_attachment(type):
             clear()
             media_menu()
         else:
-            file = f'./midia/{attach}'
+            file = f'./med/{attach}'
             if os.path.exists(file):
                 media.append(attach)
                 print(f'{Fore.GREEN}# A imagem/video {attach} foi anexada!')
@@ -725,7 +725,7 @@ def send_message(type, receiver):
 def send_attachment(receiver):
    if len(documents) > 0:
         for i in documents:
-            attachment_path = f'{os.getcwd()}//documentos//{i}'
+            attachment_path = f'{os.getcwd()}//doc//{i}'
             print(f'{Fore.YELLOW}# Enviando o documento {i} para {receiver}')
             try:
                 attachment_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/footer/div[1]/div[1]/div[2]/div')))
@@ -746,7 +746,7 @@ def send_attachment(receiver):
         
         if len(documents) > 0:
             for i in media:
-                attachment_path = f'{os.getcwd()}//midia//{i}'
+                attachment_path = f'{os.getcwd()}//med//{i}'
                 print(f'{Fore.YELLOW}# Enviando a imagem/video {i} para {receiver}')
                 try:
                     attachment_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/footer/div[1]/div[1]/div[2]/div')))
