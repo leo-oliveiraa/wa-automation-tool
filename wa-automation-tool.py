@@ -20,6 +20,7 @@ numbers = []
 message = []
 media = []
 documents = []
+driver = None
 
 # ---
 # Main menu
@@ -36,7 +37,8 @@ def main_menu():
         choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-5]:{Fore.CYAN} '))
 
         if choice == 1:
-            pass
+            clear()
+            start_sending()
         elif choice == 2:
             clear()
             mng_contacts()
@@ -487,7 +489,7 @@ def add_attachment(type):
             clear()
             media_menu()
         else:
-            file = f'{os.getcwd()}//midia//{attach}'
+            file = f'./midia/{attach}'
             if os.path.exists(file):
                 media.append(attach)
                 print(f'{Fore.GREEN}# A imagem/video {attach} foi anexada!')
@@ -633,20 +635,135 @@ def rmv_message():
 # ---
 # Execute
 # ---
-def execute():
-    pass
+def start_sending():
+    global contacts, numbers
+    
+    if len(contacts) == 0 and len(numbers) == 0:
+        send_error('ERRO: Você ainda não adicionou nenhum contato!')
+        main_menu()  
+    
+    if len(message) == 0 and len(documents) == 0 and len(media) == 0:
+        send_error('ERRO: Você ainda não adicionou nenhuma mensagem ou anexo!')
+        main_menu() 
+
+    print(f'{Fore.YELLOW}\n# ATENÇÃO!')
+    print(f'{Fore.YELLOW}# Antes de continuar verifique se o WhatsApp está conectado!')
+    print(f'{Fore.YELLOW}# Caso não esteja, escaneie o QR CODE da página antes de continuar!')
+    input(f'{Style.RESET_ALL}\n# Pressione Enter para continuar...')
+    
+    clear()
+    if len(contacts) > 0:
+       for i in contacts:
+            print(f'{Fore.YELLOW}\n# Enviando mensagem para {i}')
+            send_message(1, i)
+            sleep(1)
+    if len(numbers) > 0:
+        for i in numbers:
+            link = f'https://web.whatsapp.com/send?phone={i}'
+            driver.get(link)
+            print(f'{Fore.YELLOW}\n# Enviando mensagem para {i}')
+            send_message(2, i)
+            sleep(1)
+    print(f'{Fore.GREEN}\n# FIM DA TAREFA!')
+    input(f'{Style.RESET_ALL}\nPressione Enter para continuar...')
+    driver.close()
+    os._exit(0)
 
 # ---
 # Send messages
 # ---
-def send_message():
-    pass
+def send_message(type, receiver):
+    if type == 1:
+        try:
+            search_box=wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/div[1]/div/label/div/div[2]')))
+            search_box.click()
+            search_box.send_keys(receiver)
+
+            rc = '"' + receiver + '"'
+            x_arg = '//span[contains(@title,' + rc + ')]'
+            contact_tile = wait.until(EC.presence_of_element_located((By.XPATH, x_arg)))
+            contact_tile.click() 
+
+            input_box = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')))
+            for ch in message:       
+                if ch == "\n":
+                    ActionChains(driver).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.BACKSPACE).perform()
+                else:
+                    input_box.send_keys(ch)
+            input_box.send_keys(Keys.ENTER)
+            print(f'{Fore.GREEN}# Mensagem enviada para {receiver}')
+            #send_attachment(receiver)
+        except NoSuchElementException:
+            print(f'{Fore.RED}# Falha ao enviar mensagem para {receiver}')
+    else:
+        try:
+            # Espera até o avatar do usuário ser exibido.
+            # O avatar do usuário é carregado junto com a página.
+            # Assim é possível verificar se a página foi completamente carregada.
+            # Para evitar erros de elementos não encotnrados.
+            wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/header/div[1]/div/img')))
+            sleep(1)
+
+            # Verifica se a caixa de mensagem apareceu
+            # Caso sim, continua o envio da mensagem normalmente.
+            # Caso não, ele retornar um erro, pois o número não existe.
+            input_box = driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
+            for ch in message:       
+                if ch == "\n":
+                    ActionChains(driver).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.BACKSPACE).perform()
+                else:
+                    input_box.send_keys(ch)
+            input_box.send_keys(Keys.ENTER)
+            print(f'{Fore.GREEN}# Mensagem enviada para {receiver}')
+            send_attachment(receiver)   
+        except NoSuchElementException:
+            print(f'{Fore.RED}# Falha ao enviar mensagem para {receiver}')
 
 # ---
 # Send attachments
 # ---
-def send_attachment():
-    pass
+def send_attachment(receiver):
+   if len(documents) > 0:
+        for i in documents:
+            attachment_path = f'{os.getcwd()}//documentos//{i}'
+            print(f'{Fore.YELLOW}# Enviando o documento {i} para {receiver}')
+            try:
+                attachment_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/footer/div[1]/div[1]/div[2]/div')))
+                attachment_button.click()
+                
+                document_input = driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[1]/div[2]/span/div/div/ul/li[3]/button/input') 
+                document_input.send_keys(attachment_path) 
+                
+                sleep(1)
+
+                send_attachment_button = driver.find_element_by_xpath('//*[@id="app"]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div')
+                send_attachment_button.click()
+                print(f'{Fore.GREEN}# Documento {i} enviado para {receiver}')
+            except NoSuchElementException:
+                print(f'{Fore.RED}# Falha ao enviar o documento {i} para {receiver}')
+            except FileNotFoundError:
+                print(f'{Fore.RED}# Falha ao enviar o documento {i} para {receiver}')
+        
+        if len(documents) > 0:
+            for i in media:
+                attachment_path = f'{os.getcwd()}//midia//{i}'
+                print(f'{Fore.YELLOW}# Enviando a imagem/video {i} para {receiver}')
+                try:
+                    attachment_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/footer/div[1]/div[1]/div[2]/div')))
+                    attachment_button.click()
+                    
+                    media_input = driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[1]/div[2]/span/div/div/ul/li[1]/button/input') 
+                    media_input.send_keys(attachment_path) 
+                    
+                    sleep(1)
+
+                    send_attachment_button = driver.find_element_by_xpath('//*[@id="app"]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div')
+                    send_attachment_button.click()
+                    print(f'{Fore.GREEN}# Imagem/video {i} enviada para {receiver}')
+                except NoSuchElementException:
+                    print(f'{Fore.RED}# Falha ao enviar a imagem/video {i} para {receiver}')
+                except FileNotFoundError:
+                    print(f'{Fore.RED}# Falha ao enviar a imagem/video {i} para {receiver}')
 
 # ---
 # Utility
@@ -662,5 +779,15 @@ def send_error(error):
 # Main routine
 # ---
 if __name__ == "__main__":
+    args = Options()
+    args.add_experimental_option('excludeSwitches', ['enable-logging']) 
+    args.add_argument(r'--user-data-dir=./chrome_data')
+    args.add_argument(r'--profile-directory=Default')
+    args.binary_location = "C:/Program Files/Google/Chrome/Application/chrome.exe"
+
+    driver = webdriver.Chrome(options=args, executable_path=r"./chromedriver")
+    wait = WebDriverWait(driver, 600)
+    driver.get('https://web.whatsapp.com')
+
     clear()
     main_menu()
