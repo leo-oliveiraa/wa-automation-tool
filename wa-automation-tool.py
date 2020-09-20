@@ -44,7 +44,8 @@ def main_menu():
             clear()
             mng_attachments()
         elif choice == 4:
-            pass
+            clear()
+            mng_message()
         elif choice == 5:
             pass
         else:
@@ -549,13 +550,85 @@ def rmv_attachment(type):
 # Manage message
 # ---
 def mng_message():
-    pass
+    print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+    print(f'{Fore.CYAN}# Gerenciar mensagem')
+    
+    if len(message) > 0:
+        print(f'\n{Style.RESET_ALL}{message}\n')
+        print(f'{Fore.CYAN}1.{Style.RESET_ALL} Alterar mensagem')
+    else:
+        print(f'\n{Fore.RED}# Você ainda não adicionou uma mensagem!\n')
+        print(f'{Fore.CYAN}1.{Style.RESET_ALL} Adicionar mensagem')
+
+    print(f'{Fore.CYAN}2.{Style.RESET_ALL} Remover mensagem')
+    print(f'{Fore.CYAN}3.{Style.RESET_ALL} Voltar\n')
+    try:
+        choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-3]:{Fore.CYAN} '))
+
+        if choice == 1:
+            clear()
+            add_message()
+        elif choice == 2:
+            clear()
+            rmv_message()
+        elif choice == 3:
+            clear()
+            main_menu()
+        else:
+            send_error('ERRO: Opção inválida!')
+            mng_message()
+    except ValueError:
+        send_error('ERRO: Opção inválida!')
+        mng_message()
 
 def add_message():
-    pass
+    global message
+    print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+    print(f'{Fore.CYAN}# Adicionar mensagem\n')
+    print(f'{Fore.YELLOW}# Digite sua mensagem e adicione um "~" ao finalizar a mensagem.')
+    print(f'{Fore.YELLOW}# Ex: Olá, essa é uma mensagem de exemplo!~\n{Style.RESET_ALL}')
+    message = []
+    temp = ""
+    done = False
+    while done == False:
+        temp = input()
+        if len(temp) != 0 and temp[-1] == "~":
+            done = True
+            message.append(temp[:-1])
+        else:
+            message.append(temp)          
+    message = "\n".join(message)
+    input(f'{Style.RESET_ALL}\nPressione Enter para continuar...')
+    clear()
+    mng_message()
 
 def rmv_message():
-    pass
+    global message
+    print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+    print(f'{Fore.CYAN}# Remover mensagem\n')
+    print(f'{Fore.CYAN}1.{Style.RESET_ALL} Sim')
+    print(f'{Fore.CYAN}2.{Style.RESET_ALL} Não\n')
+    try:
+        choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-2]:{Fore.CYAN} '))
+
+        if choice == 1:
+            clear()
+            print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+            print(f'{Fore.CYAN}# Remover mensagem\n')
+            message = []
+            print(f'{Fore.RED}# Mensagem excluída com sucesso!')
+            input(f'{Style.RESET_ALL}\nPressione Enter para continuar...')
+            clear()
+            mng_message()
+        elif choice == 2:
+            clear()
+            mng_message()
+        else:
+            send_error('ERRO: Opção inválida!')
+            rmv_message()
+    except ValueError:
+        send_error('ERRO: Opção inválida!')
+        mng_message()      
 
 # ---
 # Execute
