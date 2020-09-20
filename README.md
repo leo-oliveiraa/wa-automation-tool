@@ -1,13 +1,14 @@
 # WhatsApp Automation Tool
 
-*This tool was made for study purpose, and it`s not meant to be used for spamming or spread fake news.*
+*Essa ferramente foi criado a fins de estudos, e não deve ser usada para spam ou espalhar fake news*
 
-**USE IT RESPONSIBLY!**
+**USE COM RESPONSABILIDADE!**
 
-Features
+Características
 
- - Send message to contacts or groups
- - Send message to numbers
- - Send attachments (Documents, Image or Videos)
- - Import/Export contacts or numbers from .csv files
- - Webdriver saves session
+ - Enviar mensagens para contatos ou grupos salvos
+ - Enviar mensagens para números não-salvos
+ - Enviar documentos, imagens ou vídeos
+ - Importar lista de contatos e números de um arquivo .csv
+ - Exportar lista de contatos e números para arquivo .csv
+ - Webdriver salva a sessão (Não necessita escanear o QRCode toda vez)
