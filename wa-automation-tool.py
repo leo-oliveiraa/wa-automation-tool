@@ -41,7 +41,8 @@ def main_menu():
             clear()
             mng_contacts()
         elif choice == 3:
-            pass
+            clear()
+            mng_attachments()
         elif choice == 4:
             pass
         elif choice == 5:
@@ -61,7 +62,7 @@ def mng_contacts():
     print(f'{Fore.CYAN}# Gerenciar contatos\n')
     print(f'{Fore.CYAN}1.{Style.RESET_ALL} Contatos')
     print(f'{Fore.CYAN}2.{Style.RESET_ALL} Números')
-    print(f'{Fore.CYAN}3.{Style.RESET_ALL} Voltark\n')
+    print(f'{Fore.CYAN}3.{Style.RESET_ALL} Voltar\n')
     try:
         choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-3]:{Fore.CYAN} '))
 
@@ -362,13 +363,187 @@ def export_contacts(type):
 # Manage attachments
 # ---
 def mng_attachments():
-    pass
+    print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+    print(f'{Fore.CYAN}# Gerenciar anexos\n')
+    print(f'{Fore.CYAN}1.{Style.RESET_ALL} Documentos')
+    print(f'{Fore.CYAN}2.{Style.RESET_ALL} Imagens/Videos')
+    print(f'{Fore.CYAN}3.{Style.RESET_ALL} Voltar\n')
+    try:
+        choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-3]:{Fore.CYAN} '))
 
-def add_attachment():
-    pass
+        if choice == 1:
+            clear()
+            documents_menu()
+        elif choice == 2:
+            clear()
+            media_menu()
+        elif choice == 3:
+            clear()
+            main_menu()
+        else:
+            send_error('ERRO: Opção inválida!')
+            mng_attachments()
+    except ValueError:
+        send_error('ERRO: Opção inválida!')
+        mng_attachments()
 
-def rmv_attachment():
-    pass
+def documents_menu():
+    print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+    print(f'{Fore.CYAN}# Documentos')
+    
+    if len(documents) > 0:
+        print(f'\n{Style.RESET_ALL}{documents}\n')
+    else:
+        print(f'\n{Fore.RED}# Você ainda não anexou documentos!\n')
+
+    print(f'{Fore.CYAN}1.{Style.RESET_ALL} Anexar documento')
+    print(f'{Fore.CYAN}2.{Style.RESET_ALL} Remover documento')
+    print(f'{Fore.CYAN}3.{Style.RESET_ALL} Voltar\n')
+    try:
+        choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-3]:{Fore.CYAN} '))
+
+        if choice == 1:
+            clear()
+            add_attachment(1)
+        elif choice == 2:
+            clear()
+            rmv_attachment(1)
+        elif choice == 3:
+            clear()
+            mng_attachments()
+        else:
+            send_error('ERRO: Opção inválida!')
+            documents_menu()
+    except ValueError:
+        send_error('ERRO: Opção inválida!')
+        documents_menu()
+
+def media_menu():
+    print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+    print(f'{Fore.CYAN}# Imagens/videos')
+    
+    if len(media) > 0:
+        print(f'\n{Style.RESET_ALL}{media}\n')
+    else:
+        print(f'\n{Fore.RED}# Você ainda não anexou imagens/videos!\n')
+
+    print(f'{Fore.CYAN}1.{Style.RESET_ALL} Anexar imagem/video')
+    print(f'{Fore.CYAN}2.{Style.RESET_ALL} Remover imagem/video')
+    print(f'{Fore.CYAN}3.{Style.RESET_ALL} Voltar\n')
+    try:
+        choice = int(input(f'{Style.RESET_ALL}Digite a opção desejada [1-3]:{Fore.CYAN} '))
+
+        if choice == 1:
+            clear()
+            add_attachment(2)
+        elif choice == 2:
+            clear()
+            rmv_attachment(2)
+        elif choice == 3:
+            clear()
+            mng_attachments()
+        else:
+            send_error('ERRO: Opção inválida!')
+            media_menu()
+    except ValueError:
+        send_error('ERRO: Opção inválida!')
+        media_menu()
+
+def add_attachment(type):
+    if type == 1:
+        global documents
+
+        print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+        print(f'{Fore.CYAN}# Anexar documento\n')
+        
+        print(f"{Fore.YELLOW}# Digite 'Voltar' caso tenha desistido de anexar!")
+        attach = str(input(f'{Fore.CYAN}#{Style.RESET_ALL} Digite o nome do documento que deseja anexar:{Fore.CYAN} '))
+        
+        if attach == 'Voltar' or attach == 'voltar':
+            clear()
+            documents_menu()
+        else:
+            file = f'{os.getcwd()}//documentos//{attach}'
+            if os.path.exists(file):
+                documents.append(attach)
+                print(f'{Fore.GREEN}# O documento {attach} foi anexado!')
+                input(f'{Style.RESET_ALL}\nPressione Enter para continuar...')
+                clear()
+                documents_menu()
+            else:
+                send_error('ERRO: Arquivo não encontrado na pasta documentos!')
+                add_attachment(1)
+    else:
+        global media
+
+        print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+        print(f'{Fore.CYAN}# Anexar imagem/video\n')
+        
+        print(f"{Fore.YELLOW}# Digite 'Voltar' caso tenha desistido de anexar!")
+        attach = str(input(f'{Fore.CYAN}#{Style.RESET_ALL} Digite o nome do imagem/video que deseja anexar:{Fore.CYAN} '))
+        
+        if attach == 'Voltar' or attach == 'voltar':
+            clear()
+            media_menu()
+        else:
+            file = f'{os.getcwd()}//midia//{attach}'
+            if os.path.exists(file):
+                media.append(attach)
+                print(f'{Fore.GREEN}# A imagem/video {attach} foi anexada!')
+                input(f'{Style.RESET_ALL}\nPressione Enter para continuar...')
+                clear()
+                media_menu()
+            else:
+                send_error('ERRO: Arquivo não encontrado na pasta midia!')
+                add_attachment(2)
+
+def rmv_attachment(type):
+    if type == 1:
+        global documents
+        if len(documents) == 0 :
+            send_error('ERRO: Você ainda não anexou documentos!')
+            documents_menu()     
+        print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+        print(f'{Fore.CYAN}# Remover documentos')
+        print(f'\n{Style.RESET_ALL}{documents}\n')
+        try:
+            print(f"{Fore.YELLOW}# Digite 'Voltar' caso tenha desistido de remover um documento!")
+            attach = str(input(f'{Fore.CYAN}#{Style.RESET_ALL} Digite o nome do documento que deseja remover:{Fore.CYAN} '))
+            if attach == 'Voltar' or attach == 'voltar':
+                clear()
+                documents_menu()
+            else:
+                documents.remove(attach)
+                print(f'{Fore.RED}# O documento {attach} foi removido!')
+                input(f'\n{Style.RESET_ALL}Pressione Enter para continuar...')
+                clear()
+                documents_menu()
+        except ValueError:
+            send_error('ERRO: O documento desejado não está na lista!')
+            rmv_attachment(1)
+    else:
+        global media
+        if len(media) == 0 :
+            send_error('ERRO: Você ainda não anexou imagens/videos!')
+            media_menu()     
+        print(f'{Fore.CYAN}# Whatsapp Automation Tool')
+        print(f'{Fore.CYAN}# Remover imagens/videos')
+        print(f'\n{Style.RESET_ALL}{media}\n')
+        try:
+            print(f"{Fore.YELLOW}# Digite 'Voltar' caso tenha desistido de remover uma imagem/video!")
+            attach = str(input(f'{Fore.CYAN}#{Style.RESET_ALL} Digite o nome da imagem/video que deseja remover:{Fore.CYAN} '))
+            if attach == 'Voltar' or attach == 'voltar':
+                clear()
+                media_menu()
+            else:
+                media.remove(attach)
+                print(f'{Fore.RED}# A imagem/video {attach} foi removida!')
+                input(f'\n{Style.RESET_ALL}Pressione Enter para continuar...')
+                clear()
+                media_menu()
+        except ValueError:
+            send_error('ERRO: A imagem/video desejado não está na lista!')
+            rmv_attachment(2)
 
 # ---
 # Manage message
